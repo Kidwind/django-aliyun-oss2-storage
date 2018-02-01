@@ -135,6 +135,7 @@ class AliyunBaseStorage(BucketOperationMixin, Storage):
         return name
 
     def _open(self, name, mode='rb'):
+        name = self._get_target_name(name)
         return AliyunFile(name, self, mode)
 
     def _save(self, name, content):
@@ -153,13 +154,16 @@ class AliyunBaseStorage(BucketOperationMixin, Storage):
         return self.bucket.head_object(name)
 
     def exists(self, name):
+        name = self._get_target_name(name)
         return self.bucket.object_exists(name)
 
     def size(self, name):
+        name = self._get_target_name(name)
         file_info = self.get_file_header(name)
         return file_info.content_length
 
     def modified_time(self, name):
+        name = self._get_target_name(name)
         file_info = self.get_file_header(name)
         return datetime.datetime.fromtimestamp(file_info.last_modified)
 
